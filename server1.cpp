@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
   int sockfd;
   io_context_t ctx;
   char recvname[20];
-  char buf[1024];
+  char *buf;
   struct iocb cb;
   struct iocb *pcbs[1];
   struct timespec ts;

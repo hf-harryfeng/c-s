@@ -87,7 +87,9 @@ int main(int argc, char *argv[])
       exit(6);
     }
     ctx = 0;
-    if (io_setup(1024, &ctx) != 0)
+    memset(&ctx,0,sizeof(ctx))
+    int errcode = io_setup(1024,&ctx);
+    if(errcode != 0)
     {
       perror("open");
       exit(7);
@@ -134,6 +136,7 @@ int main(int argc, char *argv[])
         {
           strncpy(recvname, buf, strlen(buf));
           fp = open(buf, O_WRONLY, 0664);
+          errcode = posix_memalign((void**)&buf,512,1024);
           io_prep_pwrite(&cb, fp, buf, 1024, 0);
           io_set_eventfd(&cb, evfd);
           io_set_callback(&cb, cf);
@@ -149,6 +152,7 @@ int main(int argc, char *argv[])
       else if (events[i].events & EPOLLOUT)
       {
         fp = open(buf, O_RDONLY | O_CREAT, 0664);
+        errcode = posix_memalign((void**)&buf,512,1024);
         io_prep_pread(&cb, fp, buf, 1024, 0);
         io_set_eventfd(&cb, evfd);
         io_set_callback(&cb, cf);
